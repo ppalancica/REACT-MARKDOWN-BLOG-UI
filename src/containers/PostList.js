@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Divider, Header, Item } from 'semantic-ui-react'
 import axios from 'axios'
 import Loader from '../components/Loader'
+import Message from '../components/Message'
 
 const PostList = () => {
   const [posts, setPosts] = useState(null)
@@ -28,6 +29,7 @@ const PostList = () => {
     <div>
     <Header>Post List</Header>
     <Divider />
+    {error && <Message negative message={error} />}
     {loading && <Loader />}
     <Item.Group>
       {posts?.map(post => {
