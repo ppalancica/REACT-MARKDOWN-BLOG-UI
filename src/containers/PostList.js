@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { Divider, Header, Image, Item } from 'semantic-ui-react'
+import { Divider, Header, Item } from 'semantic-ui-react'
 import axios from 'axios'
+import Loader from '../components/Loader'
 
 const PostList = () => {
   const [posts, setPosts] = useState(null)
@@ -27,6 +28,7 @@ const PostList = () => {
     <div>
     <Header>Post List</Header>
     <Divider />
+    {loading && <Loader />}
     <Item.Group>
       {posts?.map(post => {
         return (
