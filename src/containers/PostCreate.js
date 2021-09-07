@@ -9,11 +9,18 @@ const PostCreate = () => {
 
   const fileInputRef = useRef()
 
+  function handleSubmit(e) {
+    e.preventDefault();
+    console.log(title)
+    console.log(markdown)
+    console.log(thumbnail)
+  }
+
   return (
     <div>
       <Header>Create a post</Header>
       {thumbnail && <Message info message={`Selected image: ${thumbnail.name}`} />}
-      <Form>
+      <Form onSubmit={handleSubmit}>
         <Form.Field>
           <label>Title</label>
           <input
@@ -26,7 +33,7 @@ const PostCreate = () => {
           label='Markdown content'
           placeholder='This is your post content...'
           value={markdown}
-          onChange={e => setTitle(e.target.value)}
+          onChange={e => setMarkdown(e.target.value)}
         />
         <Form.Field>
           <Button
