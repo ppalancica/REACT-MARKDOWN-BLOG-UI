@@ -1,6 +1,9 @@
 import React, { useRef, useState } from 'react'
 import { Header, Button, Form } from 'semantic-ui-react'
 import axios from "axios";
+import MarkdownIt from 'markdown-it';
+import MdEditor from 'react-markdown-editor-lite';
+import 'react-markdown-editor-lite/lib/index.css';
 import { history } from "../helpers";
 import Message from '../components/Message'
 import {api} from '../api'
@@ -13,6 +16,16 @@ const PostCreate = () => {
   const [markdown, setMarkdown] = useState(null);
   const [thumbnail, setThumbnail] = useState(null);
 
+  const mdParser = new MarkdownIt(/* Markdown-it options */);
+
+  // function handleEditorChange({ html, text }) {
+  //   console.log('handleEditorChange', html, text);
+  //   setMarkdown(text);
+  // }
+  // function handleEditorChange({text}) {
+  //   setMarkdown(text);
+  // }
+
   const fileInputRef = useRef()
 
   function handleSubmit(e) {
@@ -22,11 +35,13 @@ const PostCreate = () => {
     // console.log(markdown)
     // console.log(thumbnail)
 
+    console.log(markdown)
+
     const formData = new FormData()
     formData.append("thumbnail", thumbnail)
     formData.append("title", title)
     formData.append("content", markdown)
-    console.log(formData);
+    // console.log(formData);
 
     axios
       .post(api.posts.create, formData, {
@@ -36,13 +51,13 @@ const PostCreate = () => {
         }
       })
       .then(res => {
-        console.log(res)
+        // console.log(res)
         setLoading(false);
         history.push('/')
         // redirect back to the post list
       })
       .catch(err => {
-        console.log(err)
+        // console.log(err)
         setLoading(false);
         setError(err.message || err)
       })
@@ -64,11 +79,10 @@ const PostCreate = () => {
             onChange={e => setTitle(e.target.value)}
           />
         </Form.Field>
-        <Form.TextArea
-          label='Markdown content'
-          placeholder='This is your post content...'
-          value={markdown}
-          onChange={e => setMarkdown(e.target.value)}
+        <MdEditor
+          style={{ height: '500px' }}
+          renderHTML={text => mdParser.render(text)}
+          onChange={({text}) => setMarkdown(text)}
         />
         <Form.Field>
           <Button
