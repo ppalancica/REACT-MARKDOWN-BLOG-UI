@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { Header, Button, Form } from 'semantic-ui-react'
 import axios from "axios";
+import { history } from "../helpers";
 import Message from '../components/Message'
 
 const PostCreate = () => {
@@ -16,28 +17,31 @@ const PostCreate = () => {
   function handleSubmit(e) {
     e.preventDefault();
     setLoading(true);
-    console.log(title)
-    console.log(markdown)
-    console.log(thumbnail)
+    // console.log(title)
+    // console.log(markdown)
+    // console.log(thumbnail)
 
     const formData = new FormData()
     formData.append("thumbnail", thumbnail)
     formData.append("title", title)
-    formData.append("markdown", markdown)
+    formData.append("content", markdown)
     console.log(formData);
 
     axios
-      .post('http:/127.0.0.1:8000/api/posts/create/', formData, {
+      .post('http://127.0.0.1:8000/api/posts/create/', formData, {
         headers: {
-          "Content-Type": "multipart/form-data"
+          "Content-Type": "multipart/form-data",
+          "Authorization": "Token aeaaaf8d52e2c7a986d3b25a4b379cca1c51b27b"
         }
       })
       .then(res => {
         console.log(res)
         setLoading(false);
+        history.push('/posts')
         // redirect back to the post list
       })
       .catch(err => {
+        console.log(err)
         setLoading(false);
         setError(err.message || err)
       })
@@ -46,6 +50,9 @@ const PostCreate = () => {
   return (
     <div>
       <Header>Create a post</Header>
+      {error && (
+        <Message danger message={error} />
+      )}
       {thumbnail && <Message info message={`Selected image: ${thumbnail.name}`} />}
       <Form onSubmit={handleSubmit}>
         <Form.Field>
@@ -64,6 +71,7 @@ const PostCreate = () => {
         />
         <Form.Field>
           <Button
+            type="button"
             fluid
             content="Choose a thumbnail"
             labelPosition="left"
@@ -77,7 +85,7 @@ const PostCreate = () => {
             onChange={e => setThumbnail(e.target.files[0])}
           />
         </Form.Field>
-        <Button primary fluid type='submit'>Submit</Button>
+        <Button primary fluid loading={loading} disabled={loading} type='submit'>Submit</Button>
       </Form>
     </div>
   );
