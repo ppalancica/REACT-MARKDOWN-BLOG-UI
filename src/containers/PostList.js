@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react'
 import {NavLink} from 'react-router-dom'
 import { Divider, Header, Item } from 'semantic-ui-react'
 import axios from 'axios'
-import Loader from '../components/Loader'
-import Message from '../components/Message'
+import Loader from '../components/Loader';
+import Message from '../components/Message';
+import {api} from '../api'
 
 const PostList = () => {
   const [posts, setPosts] = useState(null)
@@ -14,7 +15,7 @@ const PostList = () => {
     async function fetchData() {
       setLoading(true);
       try {
-        const res = await axios.get('http://127.0.0.1:8000/api/posts/');
+        const res = await axios.get(api.posts.list);
         console.log(res.data);
         setPosts(res.data)
         setLoading(false)

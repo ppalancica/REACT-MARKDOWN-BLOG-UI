@@ -3,6 +3,7 @@ import { Header, Button, Form } from 'semantic-ui-react'
 import axios from "axios";
 import { history } from "../helpers";
 import Message from '../components/Message'
+import {api} from '../api'
 
 const PostCreate = () => {
   const [error, setError] = useState(null)
@@ -28,7 +29,7 @@ const PostCreate = () => {
     console.log(formData);
 
     axios
-      .post('http://127.0.0.1:8000/api/posts/create/', formData, {
+      .post(api.posts.create, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           "Authorization": "Token aeaaaf8d52e2c7a986d3b25a4b379cca1c51b27b"
@@ -37,7 +38,7 @@ const PostCreate = () => {
       .then(res => {
         console.log(res)
         setLoading(false);
-        history.push('/posts')
+        history.push('/')
         // redirect back to the post list
       })
       .catch(err => {
