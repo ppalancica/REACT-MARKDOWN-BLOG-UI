@@ -1,8 +1,12 @@
 import React, { useRef, useState } from 'react'
 import { Header, Button, Form } from 'semantic-ui-react'
+import axios from "axios";
 import Message from '../components/Message'
 
 const PostCreate = () => {
+  const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false)
+
   const [title, setTitle] = useState(null);
   const [markdown, setMarkdown] = useState(null);
   const [thumbnail, setThumbnail] = useState(null);
@@ -11,9 +15,32 @@ const PostCreate = () => {
 
   function handleSubmit(e) {
     e.preventDefault();
+    setLoading(true);
     console.log(title)
     console.log(markdown)
     console.log(thumbnail)
+
+    const formData = new FormData()
+    formData.append("thumbnail", thumbnail)
+    formData.append("title", title)
+    formData.append("markdown", markdown)
+    console.log(formData);
+
+    axios
+      .post('http:/127.0.0.1:8000/api/posts/create/', formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      })
+      .then(res => {
+        console.log(res)
+        setLoading(false);
+        // redirect back to the post list
+      })
+      .catch(err => {
+        setLoading(false);
+        setError(err.message || err)
+      })
   }
 
   return (
