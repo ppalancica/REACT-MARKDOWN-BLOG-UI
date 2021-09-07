@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import {Container, Header} from 'semantic-ui-react'
+import {Container, Header, Image} from 'semantic-ui-react'
 import axios from 'axios'
 import Loader from '../components/Loader'
 import Message from '../components/Message'
@@ -31,13 +31,21 @@ const PostDetail = () => {
 
   return (
     <Container text>
-      <Header>{post && post.title}</Header>
       {error && <Message negative message={error} />}
       {loading && <Loader />}
       {post && (
-        <p>
-          {post.content}
-        </p>
+        <div>
+          <Image src={post.thumbnail} />
+          <Header as='h1'>
+            {post && post.title}
+          </Header>
+          <Header as='h4'>Last updated: {`${new Date(post.last_updated).toLocaleDateString()}`}</Header>
+          {post && (
+            <p>
+              {post.content}
+            </p>
+          )}
+        </div>
       )}
     </Container>
   );
