@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import {Button, Container, Divider, Header, Image, Icon, Modal} from 'semantic-ui-react'
+import {Button, Container, Divider, Header, Image, Modal} from 'semantic-ui-react'
+import ReactMarkdown from 'react-markdown'
 import axios from "axios"
 import Loader from '../components/Loader';
 import Message from '../components/Message';
@@ -90,9 +91,7 @@ const PostDetail = () => {
             {data.title}
           </Header>
           <Header as='h4'>Last updated: {`${new Date(data.last_updated).toLocaleDateString()}`}</Header>
-          <p>
-            {data.content}
-          </p>
+          <ReactMarkdown children={data.content} />
           <Divider />
           <DeleteModal postSlug={postSlug} title={data.title} thumbnail={data.thumbnail} />
         </div>
