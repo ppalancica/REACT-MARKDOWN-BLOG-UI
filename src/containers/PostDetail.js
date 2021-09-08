@@ -74,6 +74,19 @@ const DeleteModal = ({title, postSlug, thumbnail}) => {
   )
 }
 
+const Blockquote = (props) => {
+  console.log(props)
+  return (
+    <blockquote>
+      {props.value ? props.value : props.children}
+    </blockquote>
+  )
+}
+
+const Renderers = {
+  blockquote: Blockquote
+}
+
 const PostDetail = () => {
   // const params = useParams()
   // console.log(params);
@@ -91,7 +104,7 @@ const PostDetail = () => {
             {data.title}
           </Header>
           <Header as='h4'>Last updated: {`${new Date(data.last_updated).toLocaleDateString()}`}</Header>
-          <ReactMarkdown children={data.content} />
+          <ReactMarkdown children={data.content} renderers={Renderers} />
           <Divider />
           <DeleteModal postSlug={postSlug} title={data.title} thumbnail={data.thumbnail} />
         </div>
