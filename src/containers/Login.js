@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
 import { Header, Button, Container, Form } from 'semantic-ui-react'
+import { Redirect } from 'react-router-dom'
 import axios from "axios";
 import Message from '../components/Message'
 import { api } from '../api'
 import { history } from "../helpers";
+import { authenticationService } from "../services"
 
 const Login = () => {
   const [loading, setLoading] = useState(false)
@@ -30,6 +32,12 @@ const Login = () => {
         setLoading(false);
         setError(error.message || error)
       })
+  }
+
+  console.log(authenticationService.isAuthenticated)
+  
+  if (authenticationService.isAuthenticated) {
+    return <Redirect />
   }
 
   return (

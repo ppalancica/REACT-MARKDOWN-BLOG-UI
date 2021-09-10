@@ -12,4 +12,18 @@ authAxios.interceptors.request.use(config => {
   return newConfig
 })
 
-export { authAxios }
+function isAuthenticated() {
+  const token = localStorage.getItem("token")
+  return token !== null && token !== undefined
+}
+
+function logout() {
+  localStorage.removeItem("token")
+}
+
+const authenticationService = {
+  isAuthenticated: isAuthenticated(),
+  logout
+}
+
+export { authAxios, authenticationService }
