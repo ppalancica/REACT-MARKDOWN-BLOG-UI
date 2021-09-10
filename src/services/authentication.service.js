@@ -11,3 +11,5 @@ authAxios.interceptors.request.use(config => {
   }
   return newConfig
 })
+
+export { authAxios }
