@@ -3118,3 +3118,42 @@ if (data && data.is_author === false) {
 
 If we go to http://localhost:3000/posts/a-test-post/update, but we didn't create
 that post - we should be redirected to the root url.
+
+
+
+
+
+
+
+
+
+
+Misc notes:
+
+https://github.com/settings/tokens/686132701/regenerate?index_page=1
+https://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication
+https://pypi.org/project/django-cors-headers/
+https://dj-rest-auth.readthedocs.io/en/latest/installation.html#registration-optional
+https://django-allauth.readthedocs.io/en/latest/installation.html
+
+https://pypi.org/project/Pillow/
+https://reactrouter.com/web/guides/quick-start
+https://courses.reacttraining.com/p/advanced-react-free
+
+https://www.npmjs.com/package/live-server
+
+
+ERRORS:
+posts.Post.thumbnail: (fields.E210) Cannot use ImageField because Pillow is not installed.
+	HINT: Get Pillow at https://pypi.org/project/Pillow/ or run command "python -m pip install Pillow".
+
+
+https://github.com/adam-golab/react-developer-roadmap
+
+
+7-post-model - checkout and test if GET http://127.0.0.1:8000/api/posts/
+returns "thumbnail": "http://127.0.0.1:8000/api/posts/testuser/Thumbnail.jpeg",
+instead of just "thumbnail": "http://127.0.0.1:8000/testuser/Thumbnail.jpeg",
+
+2-post-model
+https://github.com/justdjango/rest-markdown-blog-api/tree/2-post-model
