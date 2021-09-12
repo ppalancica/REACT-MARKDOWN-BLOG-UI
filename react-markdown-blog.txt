@@ -1,0 +1,3120 @@
+Course:
+https://learn.justdjango.com/courses/react-markdown-blog/learning-react
+
+JustDjango repositories:
+https://github.com/justdjango/rest-markdown-blog-ui
+https://github.com/justdjango/rest-markdown-blog-api
+
+My repositories:
+https://github.com/ppalancica/REACT-MARKDOWN-BLOG (Project 1)
+https://github.com/ppalancica/REACT-MARKDOWN-BLOG-api (Project 2a)
+https://github.com/ppalancica/REACT-MARKDOWN-BLOG-ui (Project 2b)
+
+
+
+Find process using port 8000:
+$ lsof -i tcp:8000
+
+Kill a process:
+$ kill -9 <PID>
+
+https://stackoverflow.com/questions/44969794/dependency-installation-for-python-django-project
+
+
+
+Good idea to add to .gitignore:
+.vscode
+.atom
+.idea
+
+
+
+Continuation of https://github.com/ppalancica/REACT-MARKDOWN-BLOG/blob/main/react-markdown-blog.txt
+
+
+
+--- Section 2 - Project Setup
+
+--- Project Setup
+
+https://github.com/justdjango/rest-markdown-blog-api
+https://github.com/justdjango/rest-markdown-blog-ui
+
+Create 2 folders - REACT-MARKDOWN-BLOG-API and REACT-MARKDOWN-BLOG-UI
+
+For REACT-MARKDOWN-BLOG-UI:
+
+$ create-react-app blog
+
+For REACT-MARKDOWN-BLOG-API:
+
+$ virtualenv env
+
+$ source env/bin/activate
+
+$ pip install django
+
+Create a .gitignore file an add:
+env
+
+https://www.django-rest-framework.org/#installation
+https://pypi.org/project/django-cors-headers/
+
+$ pip install djangorestframework
+
+$ pip install django-cors-headers
+
+Add content of https://github.com/github/gitignore/blob/master/Python.gitignore to our file.
+
+$ django-admin startproject blog .
+
+NOTE: . because we want to put all our files inside the current (blog) directory
+
+Continuing with Django REST Framework installation...
+
+Add 'rest_framework' to your INSTALLED_APPS setting:
+
+INSTALLED_APPS = [
+    ...
+    'rest_framework',
+]
+
+Add the 'api-auth/' path to the REACT-MARKDOWN-BLOG-API/blog/urls.py file:
+
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('api-auth/', include('rest_framework.urls')),
+]
+
+Continuing with CORS Headers installation...
+
+Add 'corsheaders' to your INSTALLED_APPS setting:
+
+INSTALLED_APPS = [
+    ...,
+    'corsheaders',
+]
+
+We will also need to add a middleware class to listen in on responses (above CommonMiddleware):
+
+MIDDLEWARE = [
+    ...,
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    ...,
+]
+
+$ python manage.py migrate
+
+$ python manage.py createsuperuser
+
+$ python manage.py runserver
+
+Got to http://127.0.0.1:8000/ and we should see a "Page not found" page,
+but everything should be installed correcty.
+
+Got to https://www.django-rest-framework.org/ + API Guide + Authentication:
+https://www.django-rest-framework.org/api-guide/authentication/
+
+From "Setting the authentication scheme" section, copy and add to settings.py:
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ]
+}
+
+Remove the two lines (because we want to use TokenAuthentication):
+
+'rest_framework.authentication.BasicAuthentication',
+'rest_framework.authentication.SessionAuthentication',
+
+Copy from https://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication
+and add to INSTALLED_APPS:
+
+'rest_framework.authtoken'
+
+And we also have to migrate after all this:
+
+$ python manage.py migrate
+
+$ python manage.py runserver
+
+Add TokenAuthentication class inside REST_FRAMEWORK:
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ]
+}
+
+Go to https://github.com/iMerica/dj-rest-auth
+https://dj-rest-auth.readthedocs.io/en/latest/introduction.html
+
+$ pip install dj-rest-auth
+
+$ pip freeze > requirements.txt
+
+We'll just use Basic Authentication: https://dj-rest-auth.readthedocs.io/en/latest/api_endpoints.html#basic
+
+Copy the 'dj-rest-auth/'' path from https://dj-rest-auth.readthedocs.io/en/latest/installation.html
+and add it to urls.py:
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('api-auth/', include('rest_framework.urls')),
+    path('dj-rest-auth/', include('dj_rest_auth.urls')),
+]
+
+Search "django allauth":
+https://django-allauth.readthedocs.io/en/latest/installation.html
+
+$ pip install django-allauth
+
+Copy and add to settings.py:
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+Add to INSTALLED_APPS:
+
+'django.contrib.sites',
+
+'allauth',
+'allauth.account',
+
+Also add from https://dj-rest-auth.readthedocs.io/en/latest/installation.html#registration-optional:
+
+'dj_rest_auth',
+'dj_rest_auth.registration',
+
+Should all look in this order:
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+
+    'rest_framework',
+    'rest_framework.authtoken',
+    'dj_rest_auth',
+
+    'django.contrib.sites',
+
+    'allauth',
+    'allauth.account',
+    'dj_rest_auth.registration',
+
+    'corsheaders',
+]
+
+From https://django-allauth.readthedocs.io/en/latest/installation.html add SITE_ID:
+
+SITE_ID = 1
+
+Add the 'accounts/' path to urls.py:
+
+path('accounts/', include('allauth.urls')),
+
+From https://dj-rest-auth.readthedocs.io/en/latest/installation.html#registration-optional
+copy the two paths to urls.py:
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('api-auth/', include('rest_framework.urls')),
+    path('dj-rest-auth/', include('dj_rest_auth.urls')),
+    path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')),
+    # path('accounts/', include('allauth.urls')),
+]
+
+NOTE: We might not need accounts path for now.
+
+$ pip freeze > requirements.txt
+
+---
+Create a doc.http file in out Django project (will be interpreted by VSCode, nice extension for testing endpoints):
+
+### Test login
+POST http://127.0.0.1:8000/dj-rest-auth/login/
+Content-Type: application/json
+
+{
+  "username": "pavel",
+  "email": "pavel@site.com",
+  "password": "password"
+}
+
+We can see here https://dj-rest-auth.readthedocs.io/en/latest/api_endpoints.html#basic
+that username, email, and password are required.
+
+$ python manage.py runserver
+
+Add 'allauth.socialaccount', to INSTALLED_APPS inside settings.py
+
+$ python manage.py migrate
+
+$ python manage.py runserver
+
+### Test registration
+POST http://127.0.0.1:8000/dj-rest-auth/registration/
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "email": "testuser@test.com",
+  "password1": "Some%secret001",
+  "password2": "Some%secret001"
+}
+
+At this moment we get a Connection Refused Error because it's trying to send a SMTP email
+on registration. We want to simply display a message in the console.
+Add this line to settings.py:
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+NOTE: You can also use Postman. Set body to raw/JSON. Get something like this in return:
+
+HTTP 200 OK
+Allow: POST, OPTIONS
+Content-Type: application/json
+Vary: Accept
+
+{
+    "key": "92e4cb55fa8c04747d1ba0cd2b166abaf0817f51"
+}
+---
+
+$ python manage.py migrate
+
+$ python manage.py runserver
+
+By default, user's email should be verified. We can change that.
+https://django-allauth.readthedocs.io/en/latest/configuration.html
+See ACCOUNT_AUTHENTICATION_METHOD (=”username” | “email” | “username_email”)
+ACCOUNT_EMAIL_VERIFICATION (=”optional”)
+
+We'll add to setting.py:
+ACCOUNT_EMAIL_VERIFICATION = "none"
+
+Search "corsheaders django"
+https://pypi.org/project/django-cors-headers/
+
+(Previously CORS_ORIGIN_WHITELIST)
+
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:3000",
+]
+
+Inside REACT-MARKDOWN-BLOG-UI, move everything from the blog folder to the root folder,
+the delete the blog folder.
+
+$ npm run start
+
+Open http://localhost:3000/. React application server should be up and running.
+
+For sending and intercepting requests, we can install axios:
+$ npm i axios
+
+Search for "semantic ui react":
+https://react.semantic-ui.com/
+
+(We can use the cdn or install with npm i)
+https://react.semantic-ui.com/usage
+
+$ npm install semantic-ui-react
+
+Inside package.json file we should now see axios, react dependencies, and semantic-ui-react as well.
+
+
+--- UI Routing
+
+$ npm i semantic-ui-css
+
+Inside App.js replace:
+import './App.css';
+
+with:
+import 'semantic-ui-css/semantic.min.css';
+
+Also, remove all the code and make sure it looks like this:
+
+import 'semantic-ui-css/semantic.min.css';
+
+function App() {
+  return (
+    <div>hello world</div>
+  );
+}
+
+export default App;
+
+Delete App.css, index.css, logo.svg.
+
+From src/index.js remove this line:
+import './index.css';
+
+Search for "react router dom":
+https://www.npmjs.com/package/react-router-dom
+
+$ npm i react-router-dom
+
+We'll setup the routing in App.js:
+import {Router, Route, Switch} from 'react-router-dom';
+
+Create a containers folder inside REACT-MARKDOWN-BLOG-UI/src/ and a PostList.js file inside it:
+
+import React from 'react'
+
+const PostList = () => {
+  return (
+    <div>
+    Post List
+    </div>
+  );
+}
+
+export default PostList;
+
+Import than inside App.js:
+
+import PostList from './containers/PostList'
+
+$ npm i history
+
+Now src/App.js should look like this:
+
+// import React from 'react';
+import 'semantic-ui-css/semantic.min.css';
+import {Router, Route, Switch} from 'react-router-dom';
+import {createBrowserHistory} from 'history';
+
+import PostList from './containers/PostList'
+
+const history = createBrowserHistory();
+
+function App() {
+  return (
+    <Router history={history}>
+      <Switch>
+        <Route path="/" component={PostList} />
+      </Switch>
+    </Router>
+  );
+}
+
+export default App;
+
+$ npm run start
+
+Open http://localhost:3000/ and we should see the Post List message.
+
+Go to https://react.semantic-ui.com/theming/
+https://react.semantic-ui.com/layouts
+https://react.semantic-ui.com/layouts/fixed-menu
+
+Click in Source, and copy everything from here:
+https://github.com/Semantic-Org/Semantic-UI-React/blob/master/docs/src/layouts/FixedMenuLayout.js
+
+Inside src, create a components folder, and a Navbar.js file inside it:
+
+import React from 'react'
+import {
+  Container,
+  Divider,
+  Dropdown,
+  Grid,
+  Header,
+  Image,
+  List,
+  Menu,
+  Segment,
+} from 'semantic-ui-react'
+
+const FixedMenuLayout = () => (
+  <div>
+    <Menu fixed='top' inverted>
+      <Container>
+        <Menu.Item as='a' header>
+          <Image size='mini' src='/logo.png' style={{ marginRight: '1.5em' }} />
+          Project Name
+        </Menu.Item>
+        <Menu.Item as='a'>Home</Menu.Item>
+
+        <Dropdown item simple text='Dropdown'>
+          <Dropdown.Menu>
+            <Dropdown.Item>List Item</Dropdown.Item>
+            <Dropdown.Item>List Item</Dropdown.Item>
+            <Dropdown.Divider />
+            <Dropdown.Header>Header Item</Dropdown.Header>
+            <Dropdown.Item>
+              <i className='dropdown icon' />
+              <span className='text'>Submenu</span>
+              <Dropdown.Menu>
+                <Dropdown.Item>List Item</Dropdown.Item>
+                <Dropdown.Item>List Item</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown.Item>
+            <Dropdown.Item>List Item</Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+      </Container>
+    </Menu>
+
+    <Container text style={{ marginTop: '7em' }}>
+      <Header as='h1'>Semantic UI React Fixed Template</Header>
+      <p>This is a basic fixed menu template using fixed size containers.</p>
+      <p>
+        A text container is used for the main container, which is useful for single column layouts.
+      </p>
+
+      <Image src='/images/wireframe/media-paragraph.png' style={{ marginTop: '2em' }} />
+      <Image src='/images/wireframe/paragraph.png' style={{ marginTop: '2em' }} />
+      <Image src='/images/wireframe/paragraph.png' style={{ marginTop: '2em' }} />
+      <Image src='/images/wireframe/paragraph.png' style={{ marginTop: '2em' }} />
+      <Image src='/images/wireframe/paragraph.png' style={{ marginTop: '2em' }} />
+      <Image src='/images/wireframe/paragraph.png' style={{ marginTop: '2em' }} />
+      <Image src='/images/wireframe/paragraph.png' style={{ marginTop: '2em' }} />
+    </Container>
+
+    <Segment inverted vertical style={{ margin: '5em 0em 0em', padding: '5em 0em' }}>
+      <Container textAlign='center'>
+        <Grid divided inverted stackable>
+          <Grid.Column width={3}>
+            <Header inverted as='h4' content='Group 1' />
+            <List link inverted>
+              <List.Item as='a'>Link One</List.Item>
+              <List.Item as='a'>Link Two</List.Item>
+              <List.Item as='a'>Link Three</List.Item>
+              <List.Item as='a'>Link Four</List.Item>
+            </List>
+          </Grid.Column>
+          <Grid.Column width={3}>
+            <Header inverted as='h4' content='Group 2' />
+            <List link inverted>
+              <List.Item as='a'>Link One</List.Item>
+              <List.Item as='a'>Link Two</List.Item>
+              <List.Item as='a'>Link Three</List.Item>
+              <List.Item as='a'>Link Four</List.Item>
+            </List>
+          </Grid.Column>
+          <Grid.Column width={3}>
+            <Header inverted as='h4' content='Group 3' />
+            <List link inverted>
+              <List.Item as='a'>Link One</List.Item>
+              <List.Item as='a'>Link Two</List.Item>
+              <List.Item as='a'>Link Three</List.Item>
+              <List.Item as='a'>Link Four</List.Item>
+            </List>
+          </Grid.Column>
+          <Grid.Column width={7}>
+            <Header inverted as='h4' content='Footer Header' />
+            <p>
+              Extra space for a call to action inside the footer that could help re-engage users.
+            </p>
+          </Grid.Column>
+        </Grid>
+
+        <Divider inverted section />
+        <Image centered size='mini' src='/logo.png' />
+        <List horizontal inverted divided link size='small'>
+          <List.Item as='a' href='#'>
+            Site Map
+          </List.Item>
+          <List.Item as='a' href='#'>
+            Contact Us
+          </List.Item>
+          <List.Item as='a' href='#'>
+            Terms and Conditions
+          </List.Item>
+          <List.Item as='a' href='#'>
+            Privacy Policy
+          </List.Item>
+        </List>
+      </Container>
+    </Segment>
+  </div>
+)
+
+export default FixedMenuLayout
+
+Inside src/components/Navbar.js rename FixedMenuLayout to Navbar, and at the bottom replace:
+export default FixedMenuLayout
+
+with:
+export default Navbar
+
+Inside src/containers, create a Layout.js file:
+
+iimport React from 'react'
+import Navbar from '../components/Navbar'
+
+const Layout = () => {
+  return (
+    <Navbar />
+  );
+}
+
+export default Layout;
+
+Inside App.js import Layout:
+import Layout from './containers/Layout'
+
+Then wrap the <Switch> in a Layout component:
+
+function App() {
+  return (
+    <Router history={history}>
+      <Layout>
+        <Switch>
+          <Route path="/" component={PostList} />
+        </Switch>
+      </Layout>
+    </Router>
+  );
+}
+
+// $ npm run start
+
+Open http://localhost:3000/ and we should see the Semantic UI React Fixed Template page.
+Note that Post List is not present, because inside Layout.js we simply return Navbar.
+
+We want to pass and return children:
+
+const Layout = ({ children }) => {
+  return (
+    <>
+      <Navbar />
+      {children}
+    </>
+  );
+}
+
+Inside src/components/Navbar.js remove the <Segment>...</Segment> content.
+
+Create a Footer.js component inside src/component folder:
+
+import React from 'react'
+import React from 'react'
+import {
+  Container,
+  Divider,
+  Grid,
+  Header,
+  Image,
+  List,
+  Segment,
+} from 'semantic-ui-react'
+
+const Footer = () => {
+  return (
+    <Segment inverted vertical style={{ margin: '5em 0em 0em', padding: '5em 0em' }}>
+      <Container textAlign='center'>
+        <Grid divided inverted stackable>
+          <Grid.Column width={3}>
+            <Header inverted as='h4' content='Group 1' />
+            <List link inverted>
+              <List.Item as='a'>Link One</List.Item>
+              <List.Item as='a'>Link Two</List.Item>
+              <List.Item as='a'>Link Three</List.Item>
+              <List.Item as='a'>Link Four</List.Item>
+            </List>
+          </Grid.Column>
+          <Grid.Column width={3}>
+            <Header inverted as='h4' content='Group 2' />
+            <List link inverted>
+              <List.Item as='a'>Link One</List.Item>
+              <List.Item as='a'>Link Two</List.Item>
+              <List.Item as='a'>Link Three</List.Item>
+              <List.Item as='a'>Link Four</List.Item>
+            </List>
+          </Grid.Column>
+          <Grid.Column width={3}>
+            <Header inverted as='h4' content='Group 3' />
+            <List link inverted>
+              <List.Item as='a'>Link One</List.Item>
+              <List.Item as='a'>Link Two</List.Item>
+              <List.Item as='a'>Link Three</List.Item>
+              <List.Item as='a'>Link Four</List.Item>
+            </List>
+          </Grid.Column>
+          <Grid.Column width={7}>
+            <Header inverted as='h4' content='Footer Header' />
+            <p>
+              Extra space for a call to action inside the footer that could help re-engage users.
+            </p>
+          </Grid.Column>
+        </Grid>
+
+        <Divider inverted section />
+        <Image centered size='mini' src='/logo.png' />
+        <List horizontal inverted divided link size='small'>
+          <List.Item as='a' href='#'>
+            Site Map
+          </List.Item>
+          <List.Item as='a' href='#'>
+            Contact Us
+          </List.Item>
+          <List.Item as='a' href='#'>
+            Terms and Conditions
+          </List.Item>
+          <List.Item as='a' href='#'>
+            Privacy Policy
+          </List.Item>
+        </List>
+      </Container>
+    </Segment>
+  )
+}
+
+export default Footer
+
+Inside src/component/Navbar.js remove unused imports:
+
+import {
+  Container,
+  Dropdown,
+  Header,
+  Image,
+  Menu,
+} from 'semantic-ui-react'
+
+Open http://localhost:3000/ and we should see Post List showing up.
+
+Also, inside <Container>...</Container> get rid of all images and everything else.
+
+Add that Container to src/containers/Layout.js (wrap it around {children}, and
+don't forget to import Container):
+
+import React from 'react'
+import {Container} from 'semantic-ui-react'
+import Navbar from '../components/Navbar'
+
+const Layout = ({ children }) => {
+  return (
+    <>
+      <Navbar />
+      <Container text style={{ marginTop: '7em' }}>
+        {children}
+      </Container>
+    </>
+  );
+}
+
+export default Layout;
+
+We'll make use of semantic ui package inside PostList.js:
+
+import React from 'react'
+import {Header} from 'semantic-ui-react'
+
+const PostList = () => {
+  return (
+    <div>
+    <Header>Post List</Header>
+    </div>
+  );
+}
+
+export default PostList;
+
+Create more containers inside src/containers.
+
+PostCreate.js:
+
+import React from 'react'
+import {Header} from 'semantic-ui-react'
+
+const PostCreate = () => {
+  return (
+    <div>
+    <Header>Create a post</Header>
+    </div>
+  );
+}
+
+export default PostCreate;
+
+PostUpdate.js:
+
+import React from 'react'
+import {Header} from 'semantic-ui-react'
+
+const PostUpdate = () => {
+  return (
+    <div>
+    <Header>Update post</Header>
+    </div>
+  );
+}
+
+export default PostUpdate;
+
+PostDelete.js:
+
+import React from 'react'
+import {Header} from 'semantic-ui-react'
+
+const PostDelete = () => {
+  return (
+    <div>
+    <Header>Delete post</Header>
+    </div>
+  );
+}
+
+export default PostDelete;
+
+PostDetail.js:
+
+import React from 'react'
+import {Header} from 'semantic-ui-react'
+
+const PostDetail = () => {
+  return (
+    <div>
+    <Header>Detail of post</Header>
+    </div>
+  );
+}
+
+export default PostDetail;
+
+Add Footer component to Layout.js (but comment it for now):
+
+import React from 'react'
+import {Container} from 'semantic-ui-react'
+import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
+
+const Layout = ({ children }) => {
+  return (
+    <>
+      <Navbar />
+      <Container text style={{ marginTop: '7em' }}>
+        {children}
+      </Container>
+      // <Footer />
+    </>
+  );
+}
+
+export default Layout;
+
+(Actually remove // <Footer />)
+
+Inside Navbar.js, replace:
+Project Name
+with:
+React Markdown Blog
+
+Get rid of this line:
+<Image size='mini' src='/logo.png' style={{ marginRight: '1.5em' }} />
+
+We can remove the Header and Image imports, and import the navigation link:
+
+import React from 'react'
+import {NavLink} from 'react-router-dom'
+import {
+  Container,
+  Dropdown,
+  Menu,
+} from 'semantic-ui-react'
+
+Replace the line:
+<Menu.Item as='a'>Home</Menu.Item>
+
+with:
+<NavLink to='/'><Menu.Item as='a'>Posts</Menu.Item></NavLink>
+
+Remove Dropdown component from Navbar.js, also remove the unnecessary Dropdown import.
+
+If we inspect in the browser, we see an error. So replace:
+<NavLink to='/'><Menu.Item as='a'>Posts</Menu.Item></NavLink>
+
+with:
+<NavLink to='/'><Menu.Item as='li'>Posts</Menu.Item></NavLink>
+
+Add the Routes in App.js:
+
+...
+import PostDetail from './containers/PostDetail'
+import PostCreate from './containers/PostCreate'
+import PostUpdate from './containers/PostUpdate'
+import PostDelete from './containers/PostDelete'
+
+...
+<Route exact path="/" component={PostList} />
+<Route path="/create" component={PostCreate} />
+<Route path="/post/:postSlug" component={PostDetail} />
+<Route path="/post/:postSlug/update" component={PostUpdate} />
+<Route path="/post/:postSlug/delete" component={PostDelete} />
+
+http://localhost:3000/post/first-post
+http://localhost:3000/create
+
+Add another link to Navbar.js:
+<NavLink to='/create'><Menu.Item as='li'>Create a post</Menu.Item></NavLink>
+
+
+
+--- Section 3 - Project List
+
+--- Post Model
+
+$ python manage.py startapp posts
+
+Add 'posts' entry inside blog/settings.py:
+
+INSTALLED_APPS = [
+  ...
+  'posts',
+]
+
+Add a new path to blog/urls.py:
+path('api/', include('posts.urls', namespace='posts')),
+
+Create a url.py file inside posts app/folder:
+
+from django.urls import path
+
+app_name = 'posts'
+
+urlpatterns = [
+    # path('')
+]
+
+
+$ python manage.py runserver
+
+(Should be no issues)
+
+Add to posts/models.py:
+
+from django.contrib.auth import get_user_model
+from django.db import models
+
+User = get_user_model()
+
+def upload_post_image(instance, filename):
+    return f"{instance.user}/{filename}"
+
+class Post(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=150)
+    slug = models.SlugField()
+    created_timestamp = models.DateTimeField(auto_now=True)
+    last_updated = models.DateTimeField(auto_now=True)
+    content = models.TextField() # markdown
+    thumbnail = models.ImageField(upload_to=upload_post_image)
+
+    def __str__(self):
+        return self.title
+
+$ pip install pillow
+
+$ pip freeze > requirements.txt
+
+$ python manage.py makemigrations
+
+Add to posts/admin.py:
+
+from django.contrib import admin
+
+from .models import Post
+
+admin.site.register(Post)
+
+$ python manage.py migrate
+
+$ python manage.py runserver
+
+Open http://127.0.0.1:8000/admin
+
+Add to posts/models.py:
+...
+from django.db.models.signals import pre_save
+...
+from django.utils.text import slugify
+...
+def pre_save_receiver(sender, instance, **kwargs):
+    if not instance.slug:
+        instance.slug = slugify(instance.title)
+
+pre_save.connect(pre_save_receiver, sender=Post)
+
+Add a Post at http://127.0.0.1:8000/admin/posts/post/
+http://127.0.0.1:8000/admin/posts/post/add/
+
+Specify:
+testuser
+A test post
+a-test-post
+Blablabla
+(Add some thumbnail)
+
+Create a REACT-MARKDOWN-BLOG-API/posts/serializers.py file:
+
+from rest_framework import serializers
+from .models import Post
+
+class PostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = "__all__"
+
+Add to posts/views.py:
+
+from rest_framework import generics, permissions
+from .models import Post
+from .serializers import PostSerializer
+
+class PostListView(generics.ListAPIView):
+    permission_classes = [permissions.AllowAny]
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
+Make some additions to posts/urls.py:
+
+from django.urls import path
+from . import views
+
+app_name = 'posts'
+
+urlpatterns = [
+    path('posts/', views.PostListView.as_view(), name='post-list')
+]
+
+(Note that a testuser folder with the thumbnail image was created inside REACT-MARKDOWN-BLOG-API.)
+
+---
+Add to doc.http
+
+### Test Fetch post list
+GET http://127.0.0.1:8000/api/posts/
+Content-Type: application/json
+
+Response should look like this:
+[
+    {
+        "id": 1,
+        "title": "A test post",
+        "slug": "a-test-post",
+        "created_timestamp": "2021-09-05T23:36:57.750661Z",
+        "last_updated": "2021-09-05T23:36:57.750695Z",
+        "content": "Blablabla",
+        "thumbnail": "http://127.0.0.1:8000/testuser/Thumbnail.jpeg",
+        "user": 3
+    }
+]
+---
+
+--- Post List View
+
+Add changes to PostList.js (useEffect and useState hooks, axios for the get request):
+
+import React, { useEffect, useState } from 'react'
+import {Header} from 'semantic-ui-react'
+import axios from 'axios'
+
+const PostList = () => {
+  const [posts, setPosts] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      try {
+        const res = await axios.get('http://127.0.0.1:8000/api/posts/');
+        console.log(res.data);
+        setPosts(res.data)
+        setLoading(false)
+      } catch (error) {
+        setError(error.message)
+        setLoading(false)
+      }
+    }
+    fetchData();
+  }, [])
+
+  return (
+    <div>
+    <Header>Post List</Header>
+    </div>
+  );
+}
+
+export default PostList;
+
+---
+Accessing http://localhost:3000/ may give us this error:
+
+Access to XMLHttpRequest at 'http://127.0.0.1:8000/api/posts/' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+
+To fix it (for now), make these changes to blog/settings.py:
+
+# CORS_ALLOWED_ORIGINS = [
+#     "http://127.0.0.1:3000",
+# ]
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+https://dzone.com/articles/how-to-fix-django-cors-error
+---
+
+Search for Items component at https://react.semantic-ui.com/views/item/
+
+Actually Extra Content
+
+import React, { useEffect, useState } from 'react'
+import { Divider, Header, Image, Item } from 'semantic-ui-react'
+import axios from 'axios'
+
+const PostList = () => {
+  ...
+
+  return (
+    <div>
+    <Header>Post List</Header>
+    <Divider />
+    <Item.Group>
+      {posts?.map(post => {
+        return (
+          <Item key={post.id}>
+            <Item.Image size='small' src={post.thumbnail} />
+            <Item.Content>
+              <Item.Header as='a'>{post.title}</Item.Header>
+              <Item.Description>{post.content}</Item.Description>
+            </Item.Content>
+          </Item>
+        )
+      })}
+    </Item.Group>
+    </div>
+  );
+}
+
+export default PostList;
+
+Open http://localhost:3000/ and we should see a list of posts.
+(Thumbnail images are still not loaded yet.)
+
+Got to https://react.semantic-ui.com/elements/loader/
+
+Create Loader.js file inside src/components:
+
+import React from 'react';
+import { Dimmer, Loader, Image, Segment } from 'semantic-ui-react'
+
+export default () => {
+  return (
+    <Segment>
+      <Dimmer active inverted>
+        <Loader inverted>Loading</Loader>
+      </Dimmer>
+
+      <Image src='https://react.semantic-ui.com/images/wireframe/short-paragraph.png' />
+    </Segment>
+  )
+}
+
+From PostList.js remove the Image import and add this import:
+
+import Loader from '../components/Loader'
+
+Add below Divider:
+
+{loading && <Loader />}
+
+If we reload the page, we can see a visual loader.
+
+Go to https://react.semantic-ui.com/collections/message/
+
+Copy code from Compact section.
+Create a Message.js file inside src/components:
+
+import React from 'react'
+import { Message } from 'semantic-ui-react'
+
+export default ({ message, info, positive, warning, negative }) => (
+  <Message compact info positive warning negative>
+    {message}
+  </Message>
+)
+
+Import the Message component inside PostList.js:
+
+import Message from '../components/Message'
+
+Add below divider:
+
+{error && <Message negative message={error} />}
+
+If we actually set the URL wrongly,
+we should see a "Request failed with status code 404" error message.
+
+--- Static Files
+
+Add to blog/settings:
+
+from pathlib import Path, os
+...
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+STATIC_ROOT = os.path.join(BASE_DIR, "static_root")
+MEDIA_ROOT = os.path.join(BASE_DIR, "media_root")
+MEDIA_URL = '/media/'
+...
+
+Delete testuser folder.
+
+Add to .gitignore:
+
+static_root
+media_root
+
+From admin area, change the image for the post and click save.
+A media_root/testuser/image_name.jpeg should be seen now.
+
+Add to blog/urls.py:
+
+...
+from django.conf import settings
+from django.conf.urls.static import static
+...
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+
+--- Section 4 - Post Detail
+
+--- Post Detail
+
+Add to src/containers/PostList.js (wrap NavLink arround Item.Header):
+...
+import {NavLink} from 'react-router-dom'
+...
+<NavLink to={`/posts/${post.slug}`}>
+  <Item.Header as='h3'>{post.title}</Item.Header>
+</NavLink>
+
+Clicking the post should take us to http://localhost:3000/posts/a-test-post
+
+---
+Go to https://react.semantic-ui.com/layouts
+https://react.semantic-ui.com/layouts/sticky
+---
+
+Make some changes and additions to PostDetail.js:
+
+import React, { useEffect, useState } from 'react'
+import {Container, Header} from 'semantic-ui-react'
+import axios from 'axios'
+import Loader from '../components/Loader'
+import Message from '../components/Message'
+import { useParams } from 'react-router-dom'
+
+const PostDetail = () => {
+  const [post, setPost] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null);
+  const params = useParams()
+  console.log(params);
+
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      try {
+        const res = await axios.get(`http://127.0.0.1:8000/api/post/${postSlug}`);
+        console.log(res.data);
+        setPost(res.data)
+        setLoading(false)
+      } catch (error) {
+        setError(error.message)
+        setLoading(false)
+      }
+    }
+    fetchData();
+  }, [])
+
+  return (
+    <Container text>
+      <Header>{post.title}</Header>
+      {error && <Message negative message={error} />}
+      {loading && <Loader />}
+      {post && (
+        <p>
+          {post.content}
+        </p>
+      )}
+    </Container>
+  );
+}
+
+export default PostDetail;
+
+We won't see nothing at http://localhost:3000/posts/a-test-post yet.
+We have to make some changes to src/App.js (in the Route paths, /posts/ instead of /post/):
+...
+<Route path="/posts/:postSlug" component={PostDetail} />
+<Route path="/posts/:postSlug/update" component={PostUpdate} />
+<Route path="/posts/:postSlug/delete" component={PostDelete} />
+...
+
+In the console, we should see messages that start like this:
+{postSlug: "a-test-post"}
+
+Inside App.js, change:
+
+const params = useParams()
+console.log(params);
+
+with:
+const { postSlug } = useParams()
+
+Also change:
+<Header>{post.title}</Header>
+
+with:
+<Header>{post && post.title}</Header>
+
+If we open http://localhost:3000/posts/a-test-post, we get a 404 response,
+because the endpoint doesn't exist.
+
+--- Post Detail View
+
+Add to posts/views.py:
+
+class PostDetailView(generics.RetrieveAPIView):
+    permission_classes = [permissions.AllowAny]
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
+Add to posts/urls.py:
+...
+urlpatterns = [
+    ...
+    path('posts/<slug>/', views.PostDetailView.as_view(), name='post-details'),
+]
+
+Accessing http://localhost:3000/posts/a-test-post still gives us 404 response.
+
+Fix that by making small change to PostDetail.js (posts instead of post in this line):
+
+const res = await axios.get(`http://127.0.0.1:8000/api/posts/${postSlug}`);
+
+We also have a Django issue related to the 'lookup_field':
+---
+AssertionError: Expected view PostDetailView to be called with a URL keyword argument named "pk".
+Fix your URL conf, or set the `.lookup_field` attribute on the view correctly.
+[07/Sep/2021 11:47:43] "GET /api/posts/a-test-post/ HTTP/1.1" 500 98053
+---
+
+Add this line at the end of PostDetailView class inside views.py:
+lookup_field = 'slug'
+
+Open http://localhost:3000/posts/a-test-post and we should see Post data in the UI.
+---
+{id: 2, title: "A test post", slug: "a-test-post", created_timestamp: "2021-09-07T01:03:47.638836Z",…}
+content: "Blablabla"
+created_timestamp: "2021-09-07T01:03:47.638836Z"
+id: 2
+last_updated: "2021-09-07T01:03:47.638867Z"
+slug: "a-test-post"
+thumbnail: "http://127.0.0.1:8000/media/testuser/Bucharest.jpeg"
+title: "A test post"
+user: 6
+---
+
+--- UI Update
+
+Make changes to src/container/PostDetail.js.
+
+Import image:
+
+import {Container, Header, Image} from 'semantic-ui-react'
+
+Change Container code to:
+
+<Container text>
+  {error && <Message negative message={error} />}
+  {loading && <Loader />}
+  {post && (
+    <div>
+      <Image src={post.thumbnail} />
+      <Header as='h1'>{post && post.title}</Header>
+      {post && (
+        <p>
+          {post.content}
+        </p>
+      )}
+    </div>
+  )}
+</Container>
+
+Open http://localhost:3000/posts/a-test-post and we should see the Post data displayed,
+including the image.
+
+Add another header after first header:
+<Header as='h4'>Last updated: {`${new Date(post.last_updated).toLocaleDateString()}`}</Header>
+
+We should now see a message like "Last updated: 07/09/2021" below the Post title.
+
+
+
+--- Post Create
+
+--- Post Create View
+
+Go to https://react.semantic-ui.com/elements/list/
+https://react.semantic-ui.com/collections/form/
+
+Change PostCreate.js to:
+
+import React, { useRef, useState } from 'react'
+import { Header, Button, Form } from 'semantic-ui-react'
+
+const PostCreate = () => {
+  const [title, setTitle] = useState(null);
+  const [markdown, setMarkdown] = useState(null);
+  const [thumbnail, setThumbnail] = useState(null);
+
+  const fileInputRef = useRef()
+
+  return (
+    <div>
+      <Header>Create a post</Header>
+      <Form>
+        <Form.Field>
+          <label>Title</label>
+          <input
+            placeholder='Title of your post'
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+          />
+        </Form.Field>
+        <Form.TextArea
+          label='Markdown content'
+          placeholder='This is your post content...'
+          value={markdown}
+          onChange={e => setTitle(e.target.value)}
+        />
+        <Form.Field>
+          {thumbnail && <input value={thumbnail.name} disabled />}
+          <Button
+            type="button"
+            content="Choose a thumbnail"
+            labelPosition="left"
+            icon="file"
+            onClick = {() => fileInputRef.current.click()}
+          />
+          <input
+            ref={fileInputRef}
+            type="file"
+            hidden
+            onChange={e => setThumbnail(e.target.files[0])}
+          />
+        </Form.Field>
+        <Button type='submit'>Submit</Button>
+      </Form>
+    </div>
+  );
+}
+
+export default PostCreate;
+
+Add more changes:
+...
+import Message from '../components/Message'
+
+Remove this line:
+{thumbnail && <input value={thumbnail.name} disabled />}
+
+Add after Header :
+{thumbnail && <Message>Selected image: {thumbnail.name}</Message>}
+
+Then update that line to:
+{thumbnail && <Message info message={`Selected image: ${thumbnail.name}`} />}
+
+Change this line:
+<Button type='submit'>Submit</Button>
+
+to:
+<Button primary fluid type='submit'>Submit</Button>
+
+Add fluid to the "Choose a thumbnail" button as well.
+
+Add onSubmit property to the Form component:
+<Form onSubmit={handleSubmit}>
+
+Add an internal handleSubmit method:
+
+function handleSubmit(e) {
+  e.preventDefault();
+  console.log(title)
+  console.log(markdown)
+  console.log(thumbnail)
+}
+
+---
+In the console/info:
+
+This is a new title
+Some content
+File {name: "ikigai.jpeg", lastModified: 1628417732844, lastModifiedDate: Sun Aug 08 2021 13:15:32 GMT+0300 (Eastern European Summer Time), webkitRelativePath: "", size: 35218, …}
+lastModified: 1628417732844
+lastModifiedDate: Sun Aug 08 2021 13:15:32 GMT+0300 (Eastern European Summer Time)
+[[Prototype]]: Object
+name: "ikigai.jpeg"
+size: 35218
+type: "image/jpeg"
+webkitRelativePath: ""File {name: "ikigai.jpeg", lastModified: 1628417732844, lastModifiedDate: Sun Aug 08 2021 13:15:32 GMT+0300 (Eastern European Summer Time), webkitRelativePath: "", size: 35218, …}
+lastModified: 1628417732844
+lastModifiedDate: Sun Aug 08 2021 13:15:32 GMT+0300 (Eastern European Summer Time)
+[[Prototype]]: Object
+name: "ikigai.jpeg"
+size: 35218
+type: "image/jpeg"
+webkitRelativePath: ""
+...
+---
+
+Add this import:
+...
+import axios from "axios";
+
+Add 2 variables:
+...
+const PostCreate = () => {
+  const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false)
+...
+
+Add changes to handleSubmit:
+
+function handleSubmit(e) {
+  e.preventDefault();
+  setLoading(true);
+  console.log(title)
+  console.log(markdown)
+  console.log(thumbnail)
+
+  const formData = new FormData()
+  formData.append("thumbnail", thumbnail)
+  formData.append("title", title)
+  formData.append("content", markdown)
+  console.log(formData);
+
+  axios
+    .post('http://127.0.0.1:8000/api/posts/create/', formData, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    })
+    .then(res => {
+      console.log(res)
+      setLoading(false);
+      // redirect back to the post list
+    })
+    .catch(err => {
+      setLoading(false);
+      setError(err.message || err)
+    })
+}
+
+Create a helpers folders inside src, and add a history.js file to it.
+Move these 2 lines from App.js to history.js:
+
+import {createBrowserHistory} from 'history';
+
+const history = createBrowserHistory();
+
+Add export before const:
+export const history = createBrowserHistory();
+
+Add a index.js file inside helpers folder:
+export * from "./history";
+
+(That way, we can access the history helper just by calling the helpers folder)
+
+Add the history import to App.js:
+...
+import { history } from "./helpers";
+
+Add the history import to PostCreate.js:
+...
+import { history } from "../helpers";
+
+Push /posts to history in the success response block in the axios call:
+...
+.then(res => {
+  console.log(res)
+  setLoading(false);
+  history.push('/')
+  // redirect back to the post list
+})
+...
+
+Add loading and disabled properties to Button component:
+<Button primary fluid loading={loading} disabled={loading} type='submit'>Submit</Button>
+
+Add to return, bellow Header component:
+
+{error && (
+  <Message danger message={error} />
+)}
+
+Create a new PostCreateSerializer class inside serializers.py:
+
+class PostCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = (
+            "title",
+            "content",
+            "thumbnail",
+        )
+
+Add to views.py:
+...
+from .serializers import PostSerializer, PostCreateSerializer
+...
+class PostCreateView(generics.CreateAPIView):
+    permission_classes = [permissions.AllowAny]
+    serializer_class = PostCreateSerializer
+
+Add 'posts/create/' path to posts/urls.py (shoul be about the posts slug path):
+
+urlpatterns = [
+    path('posts/', views.PostListView.as_view(), name='post-list'),
+    path('posts/create/', views.PostCreateView.as_view(), name='post-create'),
+    path('posts/<slug>/', views.PostDetailView.as_view(), name='post-details'),
+]
+
+Inside views.py file, add new method to the PostCreateView class:
+
+def perform_create(self, serializer):
+      print(serializer.data)
+      serializer.save(user=self.request.user)
+
+Go to http://localhost:3000/create and try to create a new post.
+
+On submit, we get a 500 error:
+
+AssertionError: You cannot call `.save()` after accessing `serializer.data`.If you need to access data before committing to the database then inspect 'serializer.validated_data' instead.
+[07/Sep/2021 14:55:19] "POST /api/posts/create/ HTTP/1.1" 500 103776
+
+---
+AssertionError at /api/posts/create/
+You cannot call `.save()` after accessing `serializer.data`.
+If you need to access data before committing to the database then inspect 'serializer.validated_data' instead.
+---
+
+From PostCreateView class, perform_create method, remove this line:
+print(serializer.data)
+
+Go to Django admin. Click on Tokens http://localhost:8000/admin/authtoken/tokenproxy/
+Grab the token for the test user http://127.0.0.1:8000/admin/authtoken/tokenproxy/6/change/
+
+Inside PostCreate, in the axios call, add an Authorization header:
+...
+axios
+  .post('http://127.0.0.1:8000/api/posts/create/', formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      "Authorization": "Token aeaaaf8d52e2c7a986d3b25a4b379cca1c51b27b"
+    }
+  })
+
+Try to submit the form at http://localhost:3000/create and we should get a 201 respose which also contain the post data:
+...
+content: "Some markdown"
+thumbnail: "http://127.0.0.1:8000/media/testuser/ikigai.jpeg"
+title: "First created post"
+...
+
+We should be able to see the new post from Django admin.
+
+Go back to posts at http://localhost:3000/ and we should see the list of posts,
+including the one we just created.
+
+--- API Refactor
+
+Create a api.js file inside src folder:
+
+const baseURL = process.env.NODE_ENV === "development" ? "http://127.0.0.1:8000" : "https://domain.com"
+
+console.log(process.env)
+
+export const api = {
+  posts: {
+    list: `${baseURL}/api/posts/`
+  }
+}
+
+Inside src/containers/PostList.js:
+...
+import {api} from '../api'
+
+Replace:
+const res = await axios.get('http://127.0.0.1:8000/api/posts/');
+
+with:
+const res = await axios.get(api.posts.list);
+
+Add a new entry to posts inside api.js:
+create: `${baseURL}/api/posts/create/`,
+
+Inside PostCreate.js, in the axios call, replace:
+'http://127.0.0.1:8000/api/posts/create/'
+
+with:
+api.posts.create
+
+Also import api:
+...
+import {api} from '../api'
+
+Open http://localhost:3000/create and we should be able to create a post as before.
+
+Add retrieve entry for posts inside api.js:
+retrieve: slug => `${baseURL}/api/posts/${slug}/`,
+
+Import api to PostDetai.js:
+...
+import {api} from '../api'
+
+Then replace this line:
+const res = await axios.get(`http://127.0.0.1:8000/api/posts/${postSlug}`);
+
+with:
+const res = await axios.get(api.posts.retrieve(postSlug));
+
+If we go to a specific posts, we should see that it's fetching data the same way:
+http://localhost:3000/posts/a-test-post
+But the api is a lot better, and we don't have to worry about mispelling endpoints.
+
+--- Custom Hook
+
+PostList.js and PostDetail.js has some common code.
+
+Inside helpers, create a hooks.js file (for our custom hook):
+
+import {useState, useEffect} from "react";
+import axios from "axios";
+
+function useFetch(url, initialState=null) {
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      try {
+        const res = await axios.get(url);
+        setData(res.data)
+        setLoading(false)
+      } catch (error) {
+        setError(error.message)
+        setLoading(false)
+      }
+    }
+    fetchData();
+  }, [])
+
+  return {
+    data,
+    loading,
+    error
+  }
+}
+
+export {useFetch}
+
+Add the new line to index.js:
+export * from "./history";
+export * from "./hooks";
+
+Add to PostList.js:
+...
+import { useFetch } from "../helpers";
+
+Replace:
+import React, { useEffect, useState } from 'react'
+
+with:
+import React from 'react'
+
+Remove the axios import:
+import axios from 'axios'
+
+Replace:
+
+const [posts, setPosts] = useState(null)
+const [loading, setLoading] = useState(false)
+const [error, setError] = useState(null);
+
+useEffect(() => {
+  async function fetchData() {
+    setLoading(true);
+    try {
+      const res = await axios.get(api.posts.list);
+      console.log(res.data);
+      setPosts(res.data)
+      setLoading(false)
+    } catch (error) {
+      setError(error.message)
+      setLoading(false)
+    }
+  }
+  fetchData();
+}, [])
+
+with:
+const {data, loading, error} = useFetch(api.posts.list)
+
+Replace:
+{posts?.map(post => {
+
+with:
+{data?.map(post => {
+
+We'll do something similar in PostDetail.js, so import useFetch:
+...
+import { useFetch } from "../helpers";
+
+Remove the axios import:
+import axios from 'axios'
+
+Replace:
+import React, { useEffect, useState } from 'react'
+
+with:
+import React from 'react'
+
+The final code:
+
+import React from 'react'
+import {Container, Header, Image} from 'semantic-ui-react'
+import Loader from '../components/Loader';
+import Message from '../components/Message';
+import { useParams } from 'react-router-dom';
+import { api } from '../api';
+import { useFetch } from "../helpers";
+
+const PostDetail = () => {
+  // const params = useParams()
+  // console.log(params);
+  const { postSlug } = useParams()
+  const {data, loading, error} = useFetch(api.posts.retrieve(postSlug))
+
+  return (
+    <Container text>
+      {error && <Message negative message={error} />}
+      {loading && <Loader />}
+      {data && (
+        <div>
+          <Image src={data.thumbnail} />
+          <Header as='h1'>
+            {data.title}
+          </Header>
+          <Header as='h4'>Last updated: {`${new Date(data.last_updated).toLocaleDateString()}`}</Header>
+          <p>
+            {data.content}
+          </p>
+        </div>
+      )}
+    </Container>
+  );
+}
+
+export default PostDetail;
+
+--- Markdown Editor
+
+https://www.npmjs.com/package/react-markdown-editor-lite
+
+https://github.com/HarryChen0506/react-markdown-editor-lite
+Demo here: https://harrychen0506.github.io/react-markdown-editor-lite/
+
+$ npm i react-markdown-editor-lite
+
+Copy from https://github.com/HarryChen0506/react-markdown-editor-lite/blob/master/README.md
+
+// import react, react-markdown-editor-lite, and a markdown parser you like
+import React from 'react';
+import * as ReactDOM from 'react-dom';
+import MarkdownIt from 'markdown-it';
+import MdEditor from 'react-markdown-editor-lite';
+// import style manually
+import 'react-markdown-editor-lite/lib/index.css';
+
+// Register plugins if required
+// MdEditor.use(YOUR_PLUGINS_HERE);
+
+// Initialize a markdown parser
+const mdParser = new MarkdownIt(/* Markdown-it options */);
+
+// Finish!
+function handleEditorChange({ html, text }) {
+  console.log('handleEditorChange', html, text);
+}
+export default props => {
+  return (
+    <MdEditor style={{ height: '500px' }} renderHTML={text => mdParser.render(text)} onChange={handleEditorChange} />
+  );
+};
+
+Add that to PostCreate.js and make additional changes so it looks like this:
+
+import React, { useRef, useState } from 'react'
+import { Header, Button, Form } from 'semantic-ui-react'
+import axios from "axios";
+import MarkdownIt from 'markdown-it';
+import MdEditor from 'react-markdown-editor-lite';
+import 'react-markdown-editor-lite/lib/index.css';
+import { history } from "../helpers";
+import Message from '../components/Message'
+import {api} from '../api'
+
+const PostCreate = () => {
+  const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false)
+
+  const [title, setTitle] = useState(null);
+  const [markdown, setMarkdown] = useState(null);
+  const [thumbnail, setThumbnail] = useState(null);
+
+  const mdParser = new MarkdownIt(/* Markdown-it options */);
+
+  function handleEditorChange({ html, text }) {
+    console.log('handleEditorChange', html, text);
+  }
+
+  const fileInputRef = useRef()
+...
+
+Inside the return, add this code below Form.TextArea component:
+
+<MdEditor
+  style={{ height: '500px' }}
+  renderHTML={text => mdParser.render(text)}
+  onChange={handleEditorChange}
+/>
+
+$ npm i markdown-it
+
+$ npm run start
+
+Open http://localhost:3000/create and we should see the editor.
+
+We actually want this line inside handleEditorChange method:
+
+function handleEditorChange({text}) {
+  setMarkdown(text);
+}
+
+Change onChange inside MdEditor from:
+onChange={handleEditorChange}
+
+to:
+onChange={({text}) => setMarkdown(text)}
+
+We can remove:
+function handleEditorChange({text}) {
+  setMarkdown(text);
+}
+
+We can remove:
+<Form.TextArea
+  label='Markdown content'
+  placeholder='This is your post content...'
+  value={markdown}
+  onChange={e => setMarkdown(e.target.value)}
+/>
+
+We can also remove:
+console.log(res)
+
+and:
+console.log(err)
+
+We can print the markdown inside handleSubmit:
+...
+function handleSubmit(e) {
+  e.preventDefault();
+  setLoading(true);
+
+  console.log(markdown)
+...
+
+Comment the axios posting code and then open http://localhost:3000/create and
+create a post. We should see the markdown text in the logs.
+
+Our markdown text should be now correctly saved in the state.
+
+Un-comment the axios posting code, and get rid of:
+console.log(formData);
+
+--- Update View
+
+Update PostUpdate.js to:
+
+import React, { useState, useRef } from 'react'
+import {Button, Form, Divider, Header, Image} from 'semantic-ui-react'
+import axios from "axios";
+import MarkdownIt from 'markdown-it';
+import MdEditor from 'react-markdown-editor-lite';
+import 'react-markdown-editor-lite/lib/index.css';
+import { history } from "../helpers";
+import Loader from '../components/Loader';
+import Message from '../components/Message';
+import { api } from '../api';
+import { useParams } from 'react-router-dom';
+import { useFetch } from "../helpers";
+
+const PostUpdateForm = ({ initialTitle, initialContent, initialThumbnail }) => {
+  console.log(initialThumbnail)
+  const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false)
+
+  const [title, setTitle] = useState(initialTitle);
+  const [markdown, setMarkdown] = useState(initialContent);
+  const [currentThumbnail, setCurrentThumbnail] = useState(initialThumbnail);
+  const [thumbnail, setThumbnail] = useState(null);
+
+  const mdParser = new MarkdownIt(/* Markdown-it options */);
+
+  const fileInputRef = useRef()
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    setLoading(true);
+
+    const formData = new FormData()
+    formData.append("thumbnail", thumbnail)
+    formData.append("title", title)
+    formData.append("content", markdown)
+
+    axios
+      .put(api.posts.create, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Authorization": "Token aeaaaf8d52e2c7a986d3b25a4b379cca1c51b27b"
+        }
+      })
+      .then(res => {
+        setLoading(false);
+        history.push('/')
+        // redirect back to the post list
+      })
+      .catch(err => {
+        setLoading(false);
+        setError(err.message || err)
+      })
+  }
+
+  return (
+    <div>
+      <Header>Update post</Header>
+      {error && <Message negative message={error} />}
+      {currentThumbnail && <Image src={currentThumbnail} size="small" />}
+      <Divider />
+      <Form onSubmit={handleSubmit}>
+        <Form.Field>
+          <label>Title</label>
+          <input
+            placeholder='Title of your post'
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+          />
+        </Form.Field>
+        <MdEditor
+          value={markdown}
+          style={{ height: '500px' }}
+          renderHTML={text => mdParser.render(text)}
+          onChange={({text}) => setMarkdown(text)}
+        />
+        <Form.Field>
+          <Button
+            type="button"
+            fluid
+            content="Choose a thumbnail"
+            labelPosition="left"
+            icon="file"
+            onClick = {() => fileInputRef.current.click()}
+          />
+          <input
+            ref={fileInputRef}
+            type="file"
+            hidden
+            onChange={e => setThumbnail(e.target.files[0])}
+          />
+        </Form.Field>
+        <Button primary fluid loading={loading} disabled={loading} type='submit'>Submit</Button>
+      </Form>
+    </div>
+  );
+}
+
+const PostUpdate = () => {
+  const { postSlug } = useParams()
+  const {data, loading, error} = useFetch(api.posts.retrieve(postSlug))
+
+  return (
+    <>
+      {error && <Message negative message={error} />}
+      {loading && <Loader />}
+      {data && <PostUpdateForm
+        initialTitle={data.title}
+        initialContent={data.content}
+        initialThumbnail={data.thumbnail} />}
+    </>
+  )
+}
+
+export default PostUpdate;
+
+Inside App.js, add exact to PostDetail route:
+<Route exact path="/posts/:postSlug" component={PostDetail} />
+
+Open http://localhost:3000/posts/a-test-post/update and we should see the form pre-populated.
+
+Inside api.js, add an update key for posts:
+update: slug => `${baseURL}/api/posts/${slug}/update/`,
+
+Inside PostUpdate.js, replace:
+.post(api.posts.create, formData, {
+
+with:
+.put(api.posts.update(postSlug), formData, {
+
+Then replace:
+const PostUpdateForm = ({ initialTitle, initialContent, initialThumbnail }) => {
+
+with:
+const PostUpdateForm = ({ postSlug, initialTitle, initialContent, initialThumbnail }) => {
+
+And add this property to PostUpdateForm:
+postSlug={postSlug}
+
+--- Post Update View
+
+Inside view.py, create the PostUpdateView class:
+
+class PostUpdateView(generics.UpdateAPIView):
+    permission_classes = [permissions.AllowAny]
+    serializer_class = PostCreateSerializer
+    queryset = Post.objects.all()
+    lookup_field = 'slug'
+
+Inside posts/urls, add a new path:
+path('posts/<slug>/update/', views.PostUpdateView.as_view(), name='post-update'),
+
+If we currently try to update a post, for instance http://localhost:3000/posts/a-test-post/update,
+we get a 400 error (thumbnail: ["The submitted data was not a file. Check the encoding type on the form."])
+
+We have to make some changes to PostUpdate.js, inside handleSubmit function.
+
+Replace:
+formData.append("thumbnail", thumbnail)
+
+with:
+if (thumbnail) formData.append("thumbnail", thumbnail)
+
+Now we get a different error on Update Post submission (thumbnail: ["No file was submitted."]).
+
+We'll create a separate serializer inside serializers.py:
+
+class PostUpdateSerializer(serializers.ModelSerializer):
+    title = serializers.CharField(required=False)
+    content = serializers.CharField(required=False)
+    thumbnail = serializers.ImageField(required=False)
+
+    class Meta:
+        model = Post
+        fields = (
+            "title",
+            "content",
+            "thumbnail",
+        )
+
+Now use the PostUpdateSerializer class inside the PostUpdateView class
+(instead of PostCreateSerializer, and don't forget to also import it on the top)
+
+
+
+--- Section 7 - Post Delete
+
+We could delete a post from a separate view, but we'll actually do it from Post Detail view.
+Delete PostDelete.js file. Also delete the route from App.js:
+...
+import PostDelete from './containers/PostDelete'
+...
+<Route path="/posts/:postSlug/delete" component={PostDelete} />
+
+Inside PostDetail.js import Divider and Button:
+...
+import {Button, Container, Divider, Header, Image} from 'semantic-ui-react'
+
+After the <p> component, add:
+<Button secondary floated="right">Delete</Button>
+
+Insid https://react.semantic-ui.com/ search for "modal".
+
+We'll use the Controlled modal. // Not available anymore...
+We'll combine some code from Basic and Dimmer sections.
+
+Inside src/api.js, add a new entry for delete:
+
+export const api = {
+  posts: {
+    ...
+    delete: slug => `${baseURL}/api/posts/${slug}/delete/`,
+  }
+}
+
+Add to posts/views.py:
+
+class PostDeleteView(generics.DestroyAPIView):
+    permission_classes = [permissions.AllowAny]
+    queryset = Post.objects.all()
+    lookup_field = 'slug'
+
+Add to posts/urls.py:
+
+urlpatterns = [
+    ...
+    path('posts/<slug>/delete/', views.PostDeleteView.as_view(), name='post-delete'),
+]
+
+Final PostDetail.js file (with Post Delete functionality included) looks like this:
+
+import React, { useState } from 'react'
+import {Button, Container, Divider, Header, Image, Icon, Modal} from 'semantic-ui-react'
+import axios from "axios"
+import Loader from '../components/Loader';
+import Message from '../components/Message';
+import { useParams } from 'react-router-dom';
+import { api } from '../api';
+import { useFetch, history } from "../helpers";
+
+const DeleteModal = ({title, postSlug, thumbnail}) => {
+  const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false)
+
+  function handleSubmit() {
+    setLoading(true);
+    axios
+      .delete(api.posts.delete(postSlug), {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Authorization": "Token aeaaaf8d52e2c7a986d3b25a4b379cca1c51b27b"
+        }
+      })
+      .then(res => {
+        // console.log(res)
+        setLoading(false);
+        history.push('/')
+        // redirect back to the post list
+      })
+      .catch(err => {
+        setLoading(false);
+        setError(err.message || err)
+      })
+  }
+
+  // state = { modalOpen: false }
+  // handleOpen = () => this.setState({ modalOpen: true })
+  // handleClose = () => this.setState({ modalOpen: false })
+  const [open, toggle] = useState(false);
+
+  return (
+    <Modal
+      trigger={<Button secondary floated="right" onClick={() => toggle(true)}>Delete post</Button>}
+      open={open}
+      onClose={() => toggle(false)}
+      size='small'
+    >
+      <Modal.Header>Delete post</Modal.Header>
+      <Modal.Content image>
+        <Image size='medium' src={thumbnail} wrapped />
+        <Modal.Description>
+          <Header>{title}</Header>
+          {error && <Message negative message={error} />}
+          <p>
+            Are you sure you want to delete this post?
+          </p>
+        </Modal.Description>
+      </Modal.Content>
+      <Modal.Actions>
+        <Button color='black' onClick={() => toggle(false)}>
+          No
+        </Button>
+        <Button
+          positive
+          icon='checkmark'
+          labelPosition='right'
+          content="Confirm delete"
+          onClick={handleSubmit}
+          loading={loading}
+          disabled={loading}
+          />
+      </Modal.Actions>
+    </Modal>
+  )
+}
+
+const PostDetail = () => {
+  // const params = useParams()
+  // console.log(params);
+  const { postSlug } = useParams()
+  const {data, loading, error} = useFetch(api.posts.retrieve(postSlug))
+
+  return (
+    <Container text>
+      {error && <Message negative message={error} />}
+      {loading && <Loader />}
+      {data && (
+        <div>
+          <Image src={data.thumbnail} />
+          <Header as='h1'>
+            {data.title}
+          </Header>
+          <Header as='h4'>Last updated: {`${new Date(data.last_updated).toLocaleDateString()}`}</Header>
+          <p>
+            {data.content}
+          </p>
+          <Divider />
+          <DeleteModal postSlug={postSlug} title={data.title} thumbnail={data.thumbnail} />
+        </div>
+      )}
+    </Container>
+  );
+}
+
+export default PostDetail;
+
+
+
+--- Section 8 - Finishing Touches
+
+--- Rendering Markdown
+
+// https://github.com/rexxars/react-markdown
+https://github.com/remarkjs/react-markdown
+
+https://remarkjs.github.io/react-markdown/
+
+$ npm install --save react-markdown
+
+Add to PostDetail.js:
+...
+import ReactMarkdown from 'react-markdown'
+
+$ npm run start
+
+Replace this code:
+<p>
+  {data.content}
+</p>
+
+with:
+<ReactMarkdown children={data.content} />
+
+---
+Old way:
+<ReactMarkdown source={data.content} />
+---
+
+Update a post (for instance http://localhost:3000/posts/a-test-post/update) using
+the markdown from https://remarkjs.github.io/react-markdown/
+
+We can also customize some markdown areas (each node as we want) to look a certain way.
+For instance, go here https://react.semantic-ui.com/collections/message/ and
+copy from the component below Icon Message:
+
+<Message
+  icon='inbox'
+  header='Have you heard about our mailing list?'
+  content='Get the best news in your e-mail every day.'
+/>
+
+Replace:
+<ReactMarkdown children={data.content} />
+
+with:
+<ReactMarkdown children={data.content} renderers={Renderers} />
+
+Also add (above PostDetail):
+
+const Blockquote = (props) => {
+  console.log(props)
+  return (
+    <blockquote>
+      {props.value ? props.value : props.children}
+    </blockquote>
+  )
+}
+
+const Renderers = {
+  blockquote: Blockquote
+}
+
+In the markdown content, we can insert somthing like this:
+
+> This is our own custom blockquote
+
+--- Login
+
+Inside src/containers, create a Login.js file:
+
+import React, { useState } from 'react'
+import { Header, Button, Container, Form } from 'semantic-ui-react'
+import Message from '../components/Message'
+
+const Login = () => {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  const [username, setUsername] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+
+  function handleSubmit(e) {
+
+  }
+
+  return (
+    <Container>
+      <Header>Login to your account</Header>
+      {error && (
+        <Message danger message={error} />
+      )}
+      <Form onSubmit={handleSubmit}>
+        <Form.Field>
+          <label>Usename</label>
+          <input
+            placeholder='Usename'
+            value={username}
+            type='text'
+            onChange={e => setUsername(e.target.value)}
+          />
+        </Form.Field>
+        <Form.Field>
+          <label>Email</label>
+          <input
+            placeholder='Email'
+            value={email}
+            type='email'
+            onChange={e => setEmail(e.target.value)}
+          />
+        </Form.Field>
+        <Form.Field>
+          <label>Password</label>
+          <input
+            placeholder='Password'
+            value={password}
+            type='password'
+            onChange={e => setPassword(e.target.value)}
+          />
+        </Form.Field>
+        <Button primary fluid loading={loading} disabled={loading} type='submit'>Login</Button>
+      </Form>
+    </Container>
+  )
+}
+
+export default Login;
+
+Add to App.js file:
+
+import Login from './containers/Login'
+
+function App() {
+  return (
+    <Router history={history}>
+      <Layout>
+        <Switch>
+          ...
+          <Route path='/login' component={Login} />
+        </Switch>
+      </Layout>
+    </Router>
+  );
+}
+
+Open http://localhost:3000/login and we should see the login form.
+
+Inside src/api.js, create a separate auth entry:
+
+export const api = {
+  auth: {
+    login: `${baseURL}/dj-rest-auth/login/`
+  },
+  posts: {
+    ...
+    delete: slug => `${baseURL}/api/posts/${slug}/delete/`,
+  }
+}
+
+Inside Login.js, update handleSubmit method to:
+
+...
+import axios from "axios";
+...
+import { api } from '../api'
+import { history } from "../helpers";
+
+function handleSubmit(e) {
+  setLoading(true);
+  e.preventDefault()
+  axios
+    .post(api.auth.login, {
+      username, email, password
+    })
+    .then(res => {
+      console.log(res.data)
+      setLoading(false);
+      history.push('/')
+    })
+    .catch(error => {
+      setLoading(false);
+      setError(error.message || error)
+    })
+}
+
+Open http://localhost:3000/login and login with a user created in Django admin.
+The console should print
+...
+{ key: "00901ee1b5859ca92830b3dfcd01519be09e07fc" }
+
+That key is one of the Auth Tokens in the Django admin that corresponds to that user.
+
+Save the token to localStorage inside the success block:
+
+.then(res => {
+  localStorage.setItem("token", res.data.key)
+  ...
+})
+
+Create a services folder inside src.
+Inside the services folder, create a file named authentication.service.js:
+
+import axios from 'axios'
+
+const authAxios = axios.create()
+
+authAxios.interceptors.request.use(config => {
+  const newConfig = config
+  const token = localStorage.getItem("token")
+  console.log(token)
+  newConfig.headers = {
+    "Authorization": `Token ${token}`
+  }
+  return newConfig
+})
+
+Insid PostCreate.js replace:
+import axios from "axios";
+
+with:
+import { authAxios } from "../services"
+
+Add at the end of src/services/authentication.service.js:
+...
+export { authAxios }
+
+Create a file index.js inside src/services:
+
+export * from "./authentication.service"
+
+Insid PostCreate.js replace the axios code with:
+
+authAxios
+  .post(api.posts.create, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    }
+  })
+  .then(res => {
+    setLoading(false);
+    history.push('/')
+    // redirect back to the post list
+  })
+  .catch(err => {
+    setLoading(false);
+    setError(err.message || err)
+  })
+
+
+Open http://localhost:3000/create and type:
+
+Our first real authenticated post
+This is amazin
+(add some image)
+
+Submit.
+
+Note: If there is an issue, try to login again first at http://localhost:3000/login
+
+Inside components/Navbar.js, add a new NavLink:
+...
+<NavLink to='/login'><Menu.Item as='li'>Login</Menu.Item></NavLink>
+
+Add inside services/authentication.service.js:
+...
+function isAuthenticated() {
+  const token = localStorage.getItem("token")
+  return token !== null && token !== undefined
+}
+
+const authenticationService = {
+  isAuthenticated: isAuthenticated()
+}
+
+Also export authenticationService:
+...
+export { authAxios, authenticationService }
+
+Add to Login.js:
+...
+import { Redirect } from 'react-router-dom'
+import { authenticationService } from "../services"
+
+Add before return:
+
+console.log(authenticationService.isAuthenticated)
+
+if (authenticationService.isAuthenticated) {
+  return <Redirect />
+}
+
+---
+Find the Dropdown compoment at https://react.semantic-ui.com/modules/dropdown/
+We'll use the code from Pointing
+---
+
+Add a logout function inside src/services/authentication.service.js:
+
+function logout() {
+  localStorage.removeItem("token")
+}
+
+Also pass logout as a function withing the authenticationService object:
+
+const authenticationService = {
+  isAuthenticated: isAuthenticated(),
+  logout
+}
+
+Make some changes to Navbar.js so it looks like this:
+
+import React from 'react'
+import {NavLink} from 'react-router-dom'
+import {
+  Container,
+  Dropdown,
+  Menu,
+} from 'semantic-ui-react'
+import { authenticationService } from "../services"
+
+const Navbar = () => {
+  return (
+    <div>
+      <Menu fixed='top' inverted>
+        <Container>
+          <Menu.Item as='a' header>
+            React Markdown Blog
+          </Menu.Item>
+          <NavLink to='/'><Menu.Item as='li'>Posts</Menu.Item></NavLink>
+          {authenticationService.isAuthenticated ? (
+            <Dropdown text='Profile' pointing className='link item'>
+              <Dropdown.Menu>
+                <Dropdown.Header>Profile</Dropdown.Header>
+                <Dropdown.Item onClick={() => authenticationService.logout()}>Logout</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          ) : (
+            <NavLink to='/login'><Menu.Item as='li'>Login</Menu.Item></NavLink>
+          )}
+          <NavLink to='/create'><Menu.Item as='li'>Create a post</Menu.Item></NavLink>
+        </Container>
+      </Menu>
+    </div>
+  )
+}
+
+export default Navbar
+
+Logout from UI in the browser, then refresh page and we should see the Login menu item.
+
+If we logout but try to create a post, we should get a 401 error, which means
+we are not authenticated.
+
+--- Login Refactor
+
+We'll refactor the Navbar a bit.
+
+Inside Navbar.js, we'll move this line:
+<NavLink to='/create'><Menu.Item as='li'>Create a post</Menu.Item></NavLink>
+
+inside:
+{authenticationService.isAuthenticated ? (...)
+
+Create a fragment (<>...</> around the components).
+
+From Login.js, we'll move the axios call:
+
+axios
+  .post(api.auth.login, {
+    username, email, password
+  })
+
+to src/services/authentication.service.js:
+...
+import { api } from '../api'
+...
+function login(username, email, password) {
+  return axios
+    .post(api.auth.login, {
+      username, email, password
+    })
+    .then(res => {
+      localStorage.setItem("token", res.data.key)
+      return res
+    })
+}
+
+---
+Note that we also moved this line from Login.js to authentication.service.js:
+
+localStorage.setItem("token", res.data.key)
+---
+
+Export the login function as well:
+
+const authenticationService = {
+  isAuthenticated: isAuthenticated(),
+  login,
+  logout
+}
+
+Inside Login.js, remove axios and api imports, and the handleSubmit function
+should look like this:
+
+--- Signup
+
+Inside Navbar.js, replace:
+<NavLink to='/login'><Menu.Item as='li'>Login</Menu.Item></NavLink>
+
+with:
+<>
+  <NavLink to='/login'><Menu.Item as='li'>Login</Menu.Item></NavLink>
+  <NavLink to='/signup'><Menu.Item as='li'>Signup</Menu.Item></NavLink>
+</>
+
+Add a new endpoint to out auth api inside api.js:
+...
+export const api = {
+  auth: {
+    ...
+    register: `${baseURL}/dj-rest-auth/registration/`
+  },
+  ...
+}
+
+Add to src/services/authentication.service.js:
+...
+function signup(username, email, password1, password2) {
+  return axios
+    .post(api.auth.register, {
+      username, email, password1, password2
+    })
+    .then(res => {
+      console.log(res.data)
+      localStorage.setItem("token", res.data.key)
+      return res
+    })
+}
+...
+const authenticationService = {
+  ...
+  signup
+}
+
+Add to App.js:
+...
+import Signup from './containers/Signup'
+...
+function App() {
+  return (
+    <Router history={history}>
+      <Layout>
+        <Switch>
+          ...
+          <Route path='/signup' component={Signup} />
+        </Switch>
+      </Layout>
+    </Router>
+  );
+}
+
+Create a Signup.js file inside src/components:
+
+import React, { useState } from 'react'
+import { Header, Button, Container, Form } from 'semantic-ui-react'
+import { Redirect } from 'react-router-dom'
+import Message from '../components/Message'
+import { history } from "../helpers";
+import { authenticationService } from "../services"
+
+const Signup = () => {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  const [username, setUsername] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+
+  function handleSubmit(e) {
+    setLoading(true);
+    e.preventDefault()
+    authenticationService.signup(username, email, password, confirmPassword)
+      .then(res => {
+        setLoading(false);
+        history.push('/')
+      })
+      .catch(error => {
+        setLoading(false);
+        setError(error.message || error)
+      })
+  }
+
+  console.log(authenticationService.isAuthenticated)
+
+  if (authenticationService.isAuthenticated) {
+    return <Redirect />
+  }
+
+  return (
+    <Container>
+      <Header>Signup for an account</Header>
+      {error && (
+        <Message danger message={error} />
+      )}
+      <Form onSubmit={handleSubmit}>
+        <Form.Field>
+          <label>Usename</label>
+          <input
+            placeholder='Usename'
+            value={username}
+            type='text'
+            onChange={e => setUsername(e.target.value)}
+          />
+        </Form.Field>
+        <Form.Field>
+          <label>Email</label>
+          <input
+            placeholder='Email'
+            value={email}
+            type='email'
+            onChange={e => setEmail(e.target.value)}
+          />
+        </Form.Field>
+        <Form.Field>
+          <label>Password</label>
+          <input
+            placeholder='Password'
+            value={password}
+            type='password'
+            onChange={e => setPassword(e.target.value)}
+          />
+        </Form.Field>
+        <Form.Field>
+          <label>Password</label>
+          <input
+            placeholder='Confirm Password'
+            value={confirmPassword}
+            type='password'
+            onChange={e => setConfirmPassword(e.target.value)}
+          />
+        </Form.Field>
+        <Button primary fluid loading={loading} disabled={loading} type='submit'>Signup</Button>
+      </Form>
+    </Container>
+  )
+}
+
+export default Signup;
+
+--- Private Route
+
+Inside src/components, create a PrivateRoute.js file:
+
+import React from 'react'
+import { Route, Redirect } from 'react-router-dom'
+import { authenticationService } from '../services'
+
+const PrivateRoute = ({ component: Component, ...rest }) => (
+  <Route {...rest} render={props => {
+    if (authenticationService.isAuthenticated) {
+      return <Component {...props} />
+    }
+    return <Redirect to='/login' />
+  }} />
+)
+
+export default PrivateRoute;
+
+Import that in the App.js file:
+...
+import PrivateRoute from './components/PrivateRoute'
+
+Then replace:
+<Route path="/create" component={PostCreate} />
+
+with:
+<PrivateRoute path="/create" component={PostCreate} />
+
+If we are logged out and try to access http://localhost:3000/create,
+we should be redirected to login.
+
+--- Permissions
+
+Go to posts/views.py and inside the PostCreateView class, change this line:
+permission_classes = [permissions.AllowAny]
+
+with:
+permission_classes = [permissions.IsAuthenticated]
+
+Create a permissions.py file inside the posts app/folder:
+
+from rest_framework import permissions
+from rest_framework.exceptions import PermissionDenied
+
+class IsAuthor(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        print(obj)
+        return True
+
+Inside posts/views.py add:
+...
+from .permissions import IsAuthor
+
+Then replace:
+class PostUpdateView(generics.UpdateAPIView):
+
+with:
+permission_classes = [permissions.IsAuthenticated, IsAuthor]
+
+Inside src/containers/PostDetail.js add a NavLink import:
+...
+import { useParams, NavLink } from 'react-router-dom';
+
+Then, add after the Divider component:
+
+<NavLink to={`/posts/${postSlug}/update`}>
+  <Button color='yellow'>
+    Update
+  </Button>
+</NavLink>
+
+Replace:
+<Container text>
+
+with:
+<Container text style={{ paddingTop: 10, paddingBottom: 10 }}>
+
+We can go here http://localhost:3000/posts/a-test-post/update, and if we are
+authenticated we should be able to update the post.
+
+Inside permissions.py change the print line to:
+
+print(obj.user)
+
+Note that, for example, if the post is created by testuser, but we are logged in
+as ppalancica user - when we update a post, it will print:
+...
+[12/Sep/2021 11:00:05] "GET /api/posts/a-test-post/ HTTP/1.1" 200 3135
+testuser
+[12/Sep/2021 11:00:12] "PUT /api/posts/a-test-post/update/ HTTP/1.1" 200 2996
+
+So we have an issue. This is how we fix it:
+...
+class IsAuthor(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        return request.user == obj.user
+
+We'll only be able to update a post if we have access and we are the author of it.
+
+Inside views.py, add similar permissions to PostDeleteView class:
+...
+class PostDeleteView(generics.DestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated, IsAuthor]
+    ...
+
+Inside views.py, add a get_serializer_context method to the PostDetailView class:
+
+class PostDetailView(generics.RetrieveAPIView):
+    ...
+
+    def get_serializer_context(self):
+        context = super(PostDetailView, self).get_serializer_context()
+        context.update({
+            "request": self.request
+        })
+        return context
+
+Inside serializers.py, update the PostSerializer class to:
+
+class PostSerializer(serializers.ModelSerializer):
+    is_author = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Post
+        fields = (
+            "title",
+            "slug",
+            "last_updated",
+            "content",
+            "thumbnail",
+            "is_author"
+        )
+
+    def get_is_author(self, obj):
+        print(self.context)
+        return None
+
+If we access we should see the request object in the console:
+
+{'request': <rest_framework.request.Request: GET '/api/posts/a/'>, 'format': None, 'view': <posts.views.PostDetailView object at 0x7f890a39f790>}
+[12/Sep/2021 12:33:26] "GET /api/posts/a/ HTTP/1.1" 200 244
+
+Update the get_is_author method to:
+
+def get_is_author(self, obj):
+    # print(self.context)
+    request = self.context["request"]
+    if request.user:
+        return request.user == obj.user
+    return False
+
+Inside PostUpdate.js add:
+...
+import { authAxios } from "../services"
+
+Then replace:
+axios
+  .put(api.posts.update(postSlug), formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      "Authorization": "Token dbc9bad006b446a291213d19fce3b04ae0e12a44"
+    }
+  })
+
+with:
+authAxios
+  .put(api.posts.update(postSlug), formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    }
+  })
+
+Inside PostDetails.js add:
+...
+import { authAxios } from "../services"
+
+Then replace:
+axios
+  .delete(api.posts.delete(postSlug), {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      "Authorization": "Token aeaaaf8d52e2c7a986d3b25a4b379cca1c51b27b"
+    }
+  })
+
+with:
+authAxios
+  .delete(api.posts.delete(postSlug))
+
+Add to hooks.js:
+...
+import { authenticationService, authAxios } from "../services";
+
+Inside try, replace this line:
+const res = await axios.get(url);
+
+with:
+
+let ax = axios
+if (authenticationService.isAuthenticated) {
+  ax = authAxios
+}
+const res = await ax.get(url);
+
+Go to http://localhost:3000/posts/a-test-post
+
+If we inspect the page and go to Network, we see something like this:
+
+{title: "Test user's dummy post", slug: "a-test-post", last_updated: "2021-09-12T11:42:00.827505Z",…}
+content: "Dummy post content 1"
+is_author: false
+last_updated: "2021-09-12T11:42:00.827505Z"
+slug: "a-test-post"
+thumbnail: "http://127.0.0.1:8000/media/testuser/171454154_23846965382480646_3765977580573261019_n.png_nOVgDAB.jpg"
+title: "Test user's dummy post
+
+We'll use is_author property, and will update UI based on that.
+
+Inside PostDetail.js, replace:
+
+<NavLink to={`/posts/${postSlug}/update`}>
+  <Button color='yellow'>
+    Update
+  </Button>
+</NavLink>
+<DeleteModal postSlug={postSlug} title={data.title} thumbnail={data.thumbnail} />
+
+with:
+
+<>
+  <NavLink to={`/posts/${postSlug}/update`}>
+    <Button color='yellow'>
+      Update
+    </Button>
+  </NavLink>
+  <DeleteModal postSlug={postSlug} title={data.title} thumbnail={data.thumbnail} />
+</>
+
+Note that Update and Delete buttons should appear or disappear based on permissions
+and if we are the actual author of the post.
+
+Anyone can still see access post update section though.
+
+Inside PostUpdate.js import Redirect:
+...
+import { useParams, Redirect } from 'react-router-dom';
+
+Then, inside PostUpdate function before return, add:
+
+if (data && data.is_author === false) {
+  return <Redirect to="/" />
+}
+
+If we go to http://localhost:3000/posts/a-test-post/update, but we didn't create
+that post - we should be redirected to the root url.
