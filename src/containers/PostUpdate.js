@@ -7,8 +7,9 @@ import 'react-markdown-editor-lite/lib/index.css';
 import { history } from "../helpers";
 import Loader from '../components/Loader';
 import Message from '../components/Message';
+import { authAxios } from "../services"
 import { api } from '../api';
-import { useParams } from 'react-router-dom';
+import { useParams, Redirect } from 'react-router-dom';
 import { useFetch } from "../helpers";
 
 const PostUpdateForm = ({ postSlug, initialTitle, initialContent, initialThumbnail }) => {
@@ -34,11 +35,17 @@ const PostUpdateForm = ({ postSlug, initialTitle, initialContent, initialThumbna
     formData.append("title", title)
     formData.append("content", markdown)
 
-    axios
+    // axios
+    //   .put(api.posts.update(postSlug), formData, {
+    //     headers: {
+    //       "Content-Type": "multipart/form-data",
+    //       "Authorization": "Token dbc9bad006b446a291213d19fce3b04ae0e12a44"
+    //     }
+    //   })
+    authAxios
       .put(api.posts.update(postSlug), formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          "Authorization": "Token aeaaaf8d52e2c7a986d3b25a4b379cca1c51b27b"
         }
       })
       .then(res => {
@@ -98,6 +105,10 @@ const PostUpdateForm = ({ postSlug, initialTitle, initialContent, initialThumbna
 const PostUpdate = () => {
   const { postSlug } = useParams()
   const {data, loading, error} = useFetch(api.posts.retrieve(postSlug))
+
+  if (data && data.is_author === false) {
+    return <Redirect to="/" />
+  }
 
   return (
     <>
